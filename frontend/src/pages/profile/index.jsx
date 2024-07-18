@@ -1,5 +1,5 @@
 import { useAppStore } from "@/store";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { colors, getColors } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import apiClient from "@/lib/api-client";
 import { UPDATE_PROFILE_ROUTE } from "@/utils/constants";
+import uploadImage from "@/lib/cloudinary/uploadImage";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -18,12 +19,14 @@ const Profile = () => {
   const [hovered, setHovered] = useState(false);
   const [selectedColor, setSelectedColor] = useState(0);
   const { userInfo, setUserInfo } = useAppStore();
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (userInfo.profileSetup) {
       setFirstName(userInfo.firstName || "");
       setLastName(userInfo.lastName || "");
       setSelectedColor(userInfo.color || 0);
+      setImage(userInfo.image || "");
     }
   }, [userInfo]);
 
@@ -50,9 +53,13 @@ const Profile = () => {
           color: selectedColor,
         };
         console.log("new user Data", newUserData);
-        const response = await apiClient.post(UPDATE_PROFILE_ROUTE, newUserData, {
-          withCredentials: true,
-        });
+        const response = await apiClient.post(
+          UPDATE_PROFILE_ROUTE,
+          newUserData,
+          {
+            withCredentials: true,
+          }
+        );
         console.log("response is ", response.data);
         console.log("response is ", response.status);
         if (response.status === 200 && response.data) {
@@ -70,12 +77,42 @@ const Profile = () => {
   };
 
   const handleNavigate = () => {
-    if(userInfo.profileSetup) {
-      navigate("/chat")
+    if (userInfo.profileSetup) {
+      navigate("/chat");
     } else {
       toast.error("Please setup profile.");
     }
-  }
+  };
+  //function to handle image file input
+  const handleFileInputClick = () => {
+    fileInputRef.current.click();
+  };
+
+  //function to upload photo
+  const handleOnUploadPhoto = async (event) => {
+    const file = event.target.files[0];
+    if ({ file }) {
+      const catagory = "profilePic";
+
+      const cloudinaryFolder = `chatApp/${catagory}/`;
+
+      const uploadImageCloudinary = await uploadImage(file, cloudinaryFolder);
+
+      if(uploadImageCloudinary.data.secure_url) {
+        console.log("uploadImageCloudinary.data.url", uploadImageCloudinary.data.secure_url)
+        setUserInfo({
+          ...userInfo, 
+          image:uploadImageCloudinary?.data?.secure_url,
+        })
+      }
+    }
+  };
+  //function to delete photo
+  const handleOnDeletedPhoto = async (event) => {
+
+
+  };
+
   return (
     <div className="bg-[#1b1c24] h-[100vh] w-full  flex flex-col gap-10 items-center justify-center">
       <div className="flex flex-col gap-10 w-full lg:max-w-[70%]  overflow-y-scroll scroolbar-none mx-auto">
@@ -108,14 +145,25 @@ const Profile = () => {
               )}
             </Avatar>
             {hovered && (
-              <div className="absolute  h-32 w-32 md:h-48 md:w-48  flex items-center justify-center bg-black/50 rounded-full ring-fuchsia-50 cursor-pointer select-none">
+              <div
+                className="absolute  h-32 w-32 md:h-48 md:w-48  flex items-center justify-center bg-black/50 rounded-full ring-fuchsia-50 cursor-pointer select-none"
+                onClick={image ? handleOnDeletedPhoto : handleFileInputClick}
+              >
                 {image ? (
                   <FaTrash className="text-white text-3xl cursor-pointer active:scale-95 " />
                 ) : (
-                  <FaPlus className="text-white/50 text-3xl cursor-pointer active:scale-95  " />
+                  <FaPlus className="text-white/50 text-3xl cursor-pointer active:scale-95 " />
                 )}
               </div>
             )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleOnUploadPhoto}
+              name="profile-image"
+              accept=".png, .jpg, . jpeg, .svg, .webp,"
+            />
           </div>
 
           {/* profile input section - start */}
