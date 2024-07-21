@@ -20,20 +20,24 @@ export const SocketProvider = ({ children }) => {
         query: { userId: userInfo.id },
       });
       socket.current.on("connect", () => {
-        console.log("Connected to socket server...");
+        console.log("Connected to socket server");
       });
 
       const handleRecieveMessage = (message) => {
-        console.log("message............................................................", message)
-        const { selectedChatData, selectedChatType, addMessage } = useAppStore.getState();
-        // console.log("message............................................................", message)
+        
+        const { selectedChatData, selectedChatType, addMessage, selectedChatMessages } = useAppStore.getState();
+        console.log("message received.", message)
+        console.log("selectedChatData",selectedChatData)
+        console.log("selectedChatType",selectedChatType)
+        console.log("selectedChatMessages", selectedChatMessages)
         if (
           selectedChatType !== undefined &&
-          (selectedChatData._id === message.sender._id ||
-            selectedChatData._id === message.recipient._id)
+          (selectedChatData.id === message.sender._id ||
+            selectedChatData.id === message.recipient._id)
         ) {
-          console.log("message received............................................................", message)
+          
           addMessage(message)
+          console.log("selectedChatMessages are ........", selectedChatMessages)
         }
       };
 

@@ -22,7 +22,7 @@ const ProfileInfo = () => {
   const handleLogout = async () => {
     try {
       const response = await apiClient.post(LOGOUT_ROUTE, {}, { withCredentials: true});
-      console.log(response)
+      
       if(response.status === 200) {
         setUserInfo(null);
         navigate("/auth")

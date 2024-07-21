@@ -38,7 +38,7 @@ const NewDM = () => {
           { searchTerms },
           { withCredentials: true }
         );
-        console.log(response);
+      
         if (response.status === 200 && response.data.contacts) {
           setSearchedContacts(response.data.contacts);
         }
@@ -61,7 +61,7 @@ const NewDM = () => {
   }
 
   useEffect(() => {
-    console.log("selectedChatData updated:", selectedChatData);
+    
   }, [selectedChatData]);
 
 
@@ -112,7 +112,7 @@ const NewDM = () => {
                         <AvatarImage
                           src={contact.image}
                           alt="profile"
-                          className="object-contain h-full w-full"
+                          className="object-contain h-full w-full rounded-full"
                         />
                       ) : (
                         <div
