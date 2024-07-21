@@ -11,8 +11,8 @@ const MessageBar = () => {
   const socket = useSocket();
   const [message, setMessage] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const {selectedChatType, SelectedChatData, userInfo} = useAppStore();
-  console.log("SelectedChatData", SelectedChatData)
+  const {selectedChatType, selectedChatData, userInfo} = useAppStore();
+  console.log("SelectedChatData", selectedChatData)
   useEffect(() => {
     function handleClickOutside(event) {
       if(emojiRef.current && !emojiRef.current.contains(event.target)) {
@@ -37,7 +37,7 @@ const MessageBar = () => {
       socket.emit("sendMessage", {
         sender: userInfo.id,
         content:message,
-        recipient:SelectedChatData._id,
+        recipient:selectedChatData.id,
         messageType: "text",
         fileUrl: undefined,
       })
