@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import apiClient from "@/lib/api-client";
 import { UPDATE_PROFILE_ROUTE } from "@/utils/constants";
 import uploadImage from "@/lib/cloudinary/uploadImage";
+import deleteImage from "@/lib/cloudinary/deleteImage";
+import { RotatingLines } from "react-loader-spinner";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ const Profile = () => {
   const [selectedColor, setSelectedColor] = useState(0);
   const { userInfo, setUserInfo } = useAppStore();
   const fileInputRef = useRef(null);
+  const { loading, setLoading } = useAppStore();
 
   useEffect(() => {
     if (userInfo.profileSetup) {
@@ -52,7 +55,7 @@ const Profile = () => {
           image: image,
           color: selectedColor,
         };
-        console.log("new user Data", newUserData);
+
         const response = await apiClient.post(
           UPDATE_PROFILE_ROUTE,
           newUserData,
@@ -60,13 +63,10 @@ const Profile = () => {
             withCredentials: true,
           }
         );
-        console.log("response is ", response.data);
-        console.log("response is ", response.status);
+
         if (response.status === 200 && response.data) {
-          console.log(true);
-          console.log("user info is", userInfo);
           setUserInfo({ ...response.data });
-          console.log("user info after change is", userInfo);
+
           toast.success("Profile Updated Successfully.");
           navigate("/chat");
         }
@@ -90,27 +90,80 @@ const Profile = () => {
 
   //function to upload photo
   const handleOnUploadPhoto = async (event) => {
+    setLoading(true);
     const file = event.target.files[0];
     if ({ file }) {
       const catagory = "profilePic";
 
       const cloudinaryFolder = `chatApp/${catagory}/`;
 
-      const uploadImageCloudinary = await uploadImage(file, cloudinaryFolder);
-
-      if(uploadImageCloudinary.data.secure_url) {
-        console.log("uploadImageCloudinary.data.url", uploadImageCloudinary.data.secure_url)
-        setUserInfo({
-          ...userInfo, 
-          image:uploadImageCloudinary?.data?.secure_url,
-        })
+      try {
+        const uploadImageCloudinary = await uploadImage(file, cloudinaryFolder);
+        if (uploadImageCloudinary.data.secure_url) {
+          setUserInfo({
+            ...userInfo,
+            image: uploadImageCloudinary?.data?.secure_url,
+          });
+          // console.log("new user data", userInfo)
+          const newUserData = {
+            ...userInfo,
+            image: uploadImageCloudinary?.data?.secure_url,
+          };
+          // console.log("new user data", newUserData)
+          const updateResponse = await apiClient.post(
+            UPDATE_PROFILE_ROUTE,
+            newUserData,
+            { withCredentials: true }
+          );
+        }
+      } catch (error) {
+        toast.error("Failed to upload image.");
+      } finally {
+        setLoading(false);
       }
     }
   };
   //function to delete photo
+
   const handleOnDeletedPhoto = async (event) => {
+    const imageUrl = userInfo?.image;
 
+    if (imageUrl) {
+      setLoading(true);
+      console.log("image delete start", loading);
+      try {
+        const response = await deleteImage(imageUrl);
+        // console.log("Delete image response:", response);
 
+        if (
+          response &&
+          (response.success || response.data.result === "not found")
+        ) {
+          setUserInfo({
+            ...userInfo,
+            image: "",
+          });
+          // console.log("new user data", userInfo)
+          const newUserData = {
+            ...userInfo,
+            image: "",
+          };
+          // console.log("new user data", newUserData)
+          const updateResponse = await apiClient.post(
+            UPDATE_PROFILE_ROUTE,
+            newUserData,
+            { withCredentials: true }
+          );
+        }
+      } catch (error) {
+        // console.error("An error occurred while deleting the image:", error);
+        toast.error("An error occurred while deleting the image.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      toast.error("No image to delete.");
+    }
   };
 
   return (
@@ -149,10 +202,20 @@ const Profile = () => {
                 className="absolute  h-32 w-32 md:h-48 md:w-48  flex items-center justify-center bg-black/50 rounded-full ring-fuchsia-50 cursor-pointer select-none"
                 onClick={image ? handleOnDeletedPhoto : handleFileInputClick}
               >
-                {image ? (
-                  <FaTrash className="text-white text-3xl cursor-pointer active:scale-95 " />
+                {loading ? (
+                  <span><RotatingLines visible={true}
+                  height="40"
+                  width="40"
+                  color="black"
+                  strokeWidth="3"
+                  animationDuration="0.75"
+                  ariaLabel="rotating-lines-loading"
+                  wrapperStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  wrapperClass=""/></span>
+                ) : image ? (
+                  <FaTrash className="text-white text-3xl cursor-pointer active:scale-95" />
                 ) : (
-                  <FaPlus className="text-white/50 text-3xl cursor-pointer active:scale-95 " />
+                  <FaPlus className="text-white/50 text-3xl cursor-pointer active:scale-95" />
                 )}
               </div>
             )}

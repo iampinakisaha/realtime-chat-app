@@ -6,7 +6,7 @@ const createToken = (email, userId) => {
   return jwt.sign({email, userId}, process.env.JWT_KEY, {expiresIn: maxAge})
 };
 
-console.log("request received at backend")
+
 export const userSignUpController = async (req,res,next) => {
   try {
     const {email, password } = req.body

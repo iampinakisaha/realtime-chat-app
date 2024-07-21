@@ -3,7 +3,7 @@ import multer from "multer";
 const upload = multer({ dest: "uploads/" }); // Adjust as necessary for file storage
 
 export const uploadCloudinaryImageController = async (req, res, next) => {
-  console.log("Request received from frontend:", req);
+ 
   try {
     // Use multer to parse the multipart/form-data
     upload.single("file")(req, res, async (err) => {
@@ -12,8 +12,7 @@ export const uploadCloudinaryImageController = async (req, res, next) => {
       }
       
       const { folder } = req.body;
-      console.log("Folder:", folder);
-      console.log("File:", req.file);
+    
       
       if (!req.file || !folder) {
         throw new Error("Missing required parameters - file or folder");
@@ -24,7 +23,6 @@ export const uploadCloudinaryImageController = async (req, res, next) => {
         folder: folder
       });
 
-      console.log("Cloudinary upload result:", result);
 
       // Check if upload was successful
       if (result && result.secure_url) {
@@ -34,7 +32,7 @@ export const uploadCloudinaryImageController = async (req, res, next) => {
       }
     });
   } catch (error) {
-    console.error("Error uploading image:", error);
+   
     res.status(400).json({
       message: error.message || error,
       error: true,

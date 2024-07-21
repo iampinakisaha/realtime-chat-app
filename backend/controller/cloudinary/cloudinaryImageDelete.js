@@ -1,32 +1,52 @@
-const cloudinary = require('cloudinary').v2;
+import { v2 as cloudinary } from 'cloudinary';
 
-async function deleteCloudinaryImageController (req, res) {
-
+export const deleteCloudinaryImageController = async (req, res, next) => {
   try {
-    console.log("request", req.body)
+   
     const { public_id } = req.body;
-    
-    const {result} = await cloudinary.uploader.destroy(public_id);
-    console.log("result is", result)
   
-    if (result === "ok") {
-      res.status(200).json({
+
+    if (!public_id) {
+      return res.status(400).json({
+        message: "Public ID is required",
+        error: true,
+        success: false,
+      });
+    }
+
+    const result = await cloudinary.uploader.destroy(public_id);
+   
+
+    if (result.result === "ok") {
+      return res.status(200).json({
         data: result,
         message: "Image Deleted Successfully.",
         error: false,
         success: true,
       });
+    } else if (result.result === "not found") {
+      return res.status(404).json({
+        data: result,
+        message: "Image not found.",
+        error: true,
+        success: false,
+      });
     } else {
-      throw new Error("Image Not Found.")
+      return res.status(500).json({
+        data: result,
+        message: "An error occurred while deleting the image.",
+        error: true,
+        success: false,
+      });
     }
-
-  } catch(err) {
-    res.status(400).json({
+  } catch (err) {
+    
+    res.status(500).json({
       message: err.message || err,
       error: true,
       success: false,
     });
   }
-}
+};
 
-module.exports = deleteCloudinaryImageController
+export default deleteCloudinaryImageController;

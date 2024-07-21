@@ -4,8 +4,7 @@ import { UPLOAD_IMAGE_CLOUDINARY } from "@/utils/constants";
 
 
 const uploadImage = async (image, folder) => {
-  console.log(image)
-  console.log(folder)
+  
   const formData = new FormData();
   formData.append("file", image);
   formData.append("upload_preset", "realtime_chat");
@@ -15,7 +14,7 @@ const uploadImage = async (image, folder) => {
 
   try {
     const response = await apiClient.post(UPLOAD_IMAGE_CLOUDINARY, formData, { withCredentials: true },);
-    console.log("response", response)
+    
     if (response.status === 200 && response.data.secure_url) {
       return response;
     } else {

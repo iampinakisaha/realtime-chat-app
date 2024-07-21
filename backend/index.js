@@ -4,9 +4,11 @@ dotenv.config();
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js"
-import authRouter from "./routes/index.js";
+import authRouter from "./routes/AuthRoutes.js";
 import { v2 as cloudinary } from 'cloudinary';
-
+import bodyParser from "body-parser";
+import contactsRoutes from "./routes/ContactRoutes.js";
+import setupSocket from "./socket.js";
 connectDB();
 const app = express();
 const port = process.env.PORT || 3001;
@@ -27,14 +29,20 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
-app.use("/api/auth",authRouter)
-
+app.use("/api/auth",authRouter);
+app.use("/api/contacts", contactsRoutes);
+app.use(bodyParser.json());
 
 connectDB().then(() => {
+  console.log("Connecting to Database...")
   // if server is connected to database then run the server
-  app.listen(port,()=>{
-    console.log("Connected to DB...")
+  const server = app.listen(port,()=>{
+    console.log("Connected to Database")
     console.log(`Server is running at http://localhost:${port}`)
   })
+
+  //call setupSocket function and pass the server
+  setupSocket(server)
 })
+
 
