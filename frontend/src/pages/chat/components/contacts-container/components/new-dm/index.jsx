@@ -14,7 +14,7 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import Lottie from "react-lottie";
@@ -26,7 +26,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useAppStore } from "@/store";
 
 const NewDM = () => {
-  const {setSelectedChatType, setSelectedChatData} = useAppStore();
+  const {setSelectedChatType, setSelectedChatData, selectedChatData} = useAppStore();
   const [openNewContactModel, setOpenNewContactModel] = useState(false);
   const [searchedContacts, setSearchedContacts] = useState([]);
 
@@ -57,7 +57,14 @@ const NewDM = () => {
     setSelectedChatType("contact");
     setSelectedChatData(contact);
     setSearchedContacts([]);
+
   }
+
+  useEffect(() => {
+    console.log("selectedChatData updated:", selectedChatData);
+  }, [selectedChatData]);
+
+
   return (
     <>
       <TooltipProvider>
