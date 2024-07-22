@@ -12,11 +12,6 @@ const MessageBar = () => {
   const [message, setMessage] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const {selectedChatType, selectedChatData, userInfo} = useAppStore();
-<<<<<<< HEAD
-  console.log("SelectedChatData", selectedChatData)
-=======
-
->>>>>>> b6c689cb5dd13e7b954216c55ee1fd422144a7c6
   useEffect(() => {
     function handleClickOutside(event) {
       if(emojiRef.current && !emojiRef.current.contains(event.target)) {
