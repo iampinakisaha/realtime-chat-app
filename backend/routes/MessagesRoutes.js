@@ -5,4 +5,6 @@ import messageController from '../controller/messages/MessagesController.js';
 const messagesRoutes = Router ();
 
 
-messagesRoutes.post("/get-messages", verifyToken, messageController)
+messagesRoutes.post("/get-messages", verifyToken, messageController);
+
+export default messagesRoutes;

@@ -17,3 +17,8 @@ export const DELETE_IMAGE_CLOUDINARY = `${AUTH_ROUTES}/delete-image-cloudinary`;
 //contact search
 export const CONTACTS_ROUTES = "api/contacts";
 export const SEARCH_CONTACTS_ROUTES = `${CONTACTS_ROUTES}/search-contact`;
+export const GET_CONTACT_DM_ROUTES = `${CONTACTS_ROUTES}/get-contact-for-dm`;
+
+// get messages
+export const MESSAGES_ROUTES = "api/messages";
+export const GET_MESSAGES_ROUTES = `${MESSAGES_ROUTES}/get-messages`;

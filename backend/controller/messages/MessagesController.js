@@ -2,6 +2,7 @@ import Message from "../../models/MessageModel.js";
 import User from "../../models/UserModel.js";
 
 export const messageController = async (req, res, next) => {
+  console.log("request received at backend")
   try {
     const user1 = req.userId;
     const user2 = req.body.id;
