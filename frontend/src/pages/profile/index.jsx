@@ -104,12 +104,12 @@ const Profile = () => {
             ...userInfo,
             image: uploadImageCloudinary?.data?.secure_url,
           });
-          // console.log("new user data", userInfo)
+        
           const newUserData = {
             ...userInfo,
             image: uploadImageCloudinary?.data?.secure_url,
           };
-          // console.log("new user data", newUserData)
+          
           const updateResponse = await apiClient.post(
             UPDATE_PROFILE_ROUTE,
             newUserData,
@@ -130,10 +130,10 @@ const Profile = () => {
 
     if (imageUrl) {
       setLoading(true);
-      console.log("image delete start", loading);
+      
       try {
         const response = await deleteImage(imageUrl);
-        // console.log("Delete image response:", response);
+       
 
         if (
           response &&
@@ -143,12 +143,12 @@ const Profile = () => {
             ...userInfo,
             image: "",
           });
-          // console.log("new user data", userInfo)
+          
           const newUserData = {
             ...userInfo,
             image: "",
           };
-          // console.log("new user data", newUserData)
+          
           const updateResponse = await apiClient.post(
             UPDATE_PROFILE_ROUTE,
             newUserData,
@@ -156,7 +156,7 @@ const Profile = () => {
           );
         }
       } catch (error) {
-        // console.error("An error occurred while deleting the image:", error);
+        
         toast.error("An error occurred while deleting the image.");
       } finally {
         setLoading(false);

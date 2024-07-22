@@ -59,27 +59,25 @@ const Auth = () => {
         );
   
         if (response.data?.id) {
-          // Set userInfo in state
+          
           setUserInfo(response.data);
   
-          console.log("data at login", response.data.profileSetup);
-          console.log("userInfo", response.data);
-  
-          // Ensure profileSetup is correctly evaluated
+         
+          
           if (response.data.profileSetup) {
-            console.log("Navigating to /chat");
+            
             navigate("/chat");
           } else {
-            console.log("Navigating to /profile");
+            
             navigate("/profile");
           }
         } else {
-          // Handle case where user id is not present in response
+         
           toast.error("Login failed. Please check your credentials.");
         }
   
       } catch (error) {
-        console.error("Error logging in:", error);
+       
         toast.error("Failed to login. Please try again later.");
       }
     }
@@ -94,7 +92,7 @@ const Auth = () => {
         { withCredentials: true },
       );
       toast.success("Signup successfully. Please login now to continue");
-      console.log({ response });
+      
     }
   };
 
