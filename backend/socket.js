@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import Message from "./models/MessageModel.js";
-
+import Channel from "./models/ChannelModel.js";
 //passing server from index.js file
 const setupSocket = (server) => {
   const io = new Server(server, {
@@ -33,11 +33,50 @@ const setupSocket = (server) => {
       .populate("sender", "id email firstName lastName image color")
       .populate("recipient", "id email firstName lastName image color");
 
-    if(recipientSocketId) {
+    if (recipientSocketId) {
       io.to(recipientSocketId).emit("recieveMessage", messageData);
     }
     if (senderSocketId) {
       io.to(senderSocketId).emit("recieveMessage", messageData);
+    }
+  };
+
+  const sendChannelMessage = async (message) => {
+    
+    const { channelId, sender, content, messageType, fileUrl } = message;
+
+    const createdMessage = await Message.create({
+      sender,
+      recipient: null,
+      content,
+      messageType,
+      timestamp: new Date(),
+      fileUrl,
+    });
+
+    const messageData = await Message.findById(createdMessage._id)
+      .populate("sender", "id email firstName lastName image color")
+      .exec();
+
+    await Channel.findByIdAndUpdate(channelId, {
+      $push: { messages: createdMessage._id },
+    });
+
+    const channel = await Channel.findById(channelId).populate("members");
+
+    const finalData = { ...messageData._doc, channelId: channel._id };
+
+    if (channel && channel.members) {
+      channel.members.forEach((member) => {
+        const memberSocketId = userSocketMap.get(member._id.toString());
+        if (memberSocketId) {
+          io.to(memberSocketId).emit("recieve-channel-message", finalData);
+        }
+      });
+      const adminSocketId = userSocketMap.get(channel.admin._id.toString());
+      if (adminSocketId) {
+        io.to(adminSocketId).emit("recieve-channel-message", finalData);
+      }
     }
   };
 
@@ -51,6 +90,7 @@ const setupSocket = (server) => {
       console.log("User ID not provided during connection");
     }
     socket.on("sendMessage", sendMessage);
+    socket.on("send-channel-message", sendChannelMessage);
     socket.on("disconnect", () => disconnect(socket));
   });
 };

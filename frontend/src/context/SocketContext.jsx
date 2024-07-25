@@ -20,16 +20,13 @@ export const SocketProvider = ({ children }) => {
         query: { userId: userInfo.id },
       });
       socket.current.on("connect", () => {
-        console.log("Connected to socket server");
+        
       });
 
       const handleRecieveMessage = (message) => {
         
         const { selectedChatData, selectedChatType, addMessage, selectedChatMessages } = useAppStore.getState();
-        console.log("message received.", message)
-        console.log("selectedChatData",selectedChatData)
-        console.log("selectedChatType",selectedChatType)
-        console.log("selectedChatMessages", selectedChatMessages)
+      
         if (
           selectedChatType !== undefined &&
           (selectedChatData.id === message.sender._id ||
@@ -37,13 +34,21 @@ export const SocketProvider = ({ children }) => {
         ) {
           
           addMessage(message)
-          console.log("selectedChatMessages are ........", selectedChatMessages)
+         
         }
       };
 
-      socket.current.on("recieveMessage", handleRecieveMessage);
+      const handleRecieveChannelMessage = (message) => {
+        const { selectedChatData, selectedChatType, addMessage } = useAppStore.getState();
+        if(selectedChatType !== undefined && selectedChatData.id === message.channelId) {
+          addMessage(message)
+        }
+      }
 
+      socket.current.on("recieveMessage", handleRecieveMessage);
+      socket.current.on("recieve-channel-message", handleRecieveChannelMessage);
       return () => {
+        
         socket.current.disconnect();
       };
     }

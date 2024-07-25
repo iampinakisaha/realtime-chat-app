@@ -40,6 +40,8 @@ const NewDM = () => {
         );
       
         if (response.status === 200 && response.data.contacts) {
+
+          console.log("response.data.contacts",response.data.contacts)
           setSearchedContacts(response.data.contacts);
         }
       } else {
@@ -51,7 +53,7 @@ const NewDM = () => {
     }
    
   };
-
+  
   const selectNewContact = (contact) => {
     setOpenNewContactModel(false);
     setSelectedChatType("contact");
@@ -60,9 +62,9 @@ const NewDM = () => {
 
   }
 
-  useEffect(() => {
+  // useEffect(() => {
     
-  }, [selectedChatData]);
+  // }, [selectedChatData]);
 
 
   return (

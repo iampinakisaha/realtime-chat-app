@@ -20,7 +20,7 @@ export const getContactsForDMController = async (req, res, next) => {
         $group: {
           _id: {
             $cond: {
-              if: { $eq: ["sender", userId] },
+              if: { $eq: ["$sender", userId] },
               then: "$recipient",
               else: "$sender",
             },

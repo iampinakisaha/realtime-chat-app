@@ -6,5 +6,4 @@ const messagesRoutes = Router ();
 
 
 messagesRoutes.post("/get-messages", verifyToken, messageController);
-
 export default messagesRoutes;

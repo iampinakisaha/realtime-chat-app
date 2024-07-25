@@ -15,9 +15,7 @@ const ContactList = ({ contacts, isChannel = false }) => {
   const handleClick = (contact) => {
     if (isChannel) setSelectedChatType("channel");
     else setSelectedChatType("contact");
-    console.log("In contact-list")
-    console.log("selectedChatData",selectedChatData)
-    console.log("contact", contact)
+    
 
     // Create a new object with `id` instead of `_id`
     const contactWithId = { ...contact, id: contact._id };
