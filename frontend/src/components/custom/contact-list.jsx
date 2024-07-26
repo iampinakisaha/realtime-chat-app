@@ -15,7 +15,6 @@ const ContactList = ({ contacts, isChannel = false }) => {
   const handleClick = (contact) => {
     if (isChannel) setSelectedChatType("channel");
     else setSelectedChatType("contact");
-    
 
     // Create a new object with `id` instead of `_id`
     const contactWithId = { ...contact, id: contact._id };
@@ -51,9 +50,11 @@ const ContactList = ({ contacts, isChannel = false }) => {
                 ) : (
                   <div
                     className={`
-                      ${selectedChatData && selectedChatData.id === contact._id ? "bg-[#ffffff22] border-2 border-white/70" : getColors(
-                      contact.color
-                    )}
+                      ${
+                        selectedChatData && selectedChatData.id === contact._id
+                          ? "bg-[#ffffff22] border-2 border-white/70"
+                          : getColors(contact.color)
+                      }
                       uppercase select-none h-12 w-12  text-xl border-[2px] flex items-center justify-center rounded-full text-white `}
                   >
                     {contact.firstName
@@ -63,12 +64,16 @@ const ContactList = ({ contacts, isChannel = false }) => {
                 )}
               </Avatar>
             )}
-            {
-              isChannel && <div className="bg-[#ffffff22] h-10 w-10 flex justify-center items-center rounded-full">#</div>
-            }
-            {
-              isChannel ? <span>{contact.name}</span> : <span>{`${contact.firstName} ${contact.lastName}`}</span>
-            }
+            {isChannel && (
+              <div className="bg-[#ffffff22] h-10 w-10 flex justify-center items-center rounded-full">
+                #
+              </div>
+            )}
+            {isChannel ? (
+              <span>{contact.name}</span>
+            ) : (
+              <span>{contact.firstName ? `${contact.firstName} ${contact.lastName}` : contact.email}</span>
+            )}
           </div>
         </div>
       ))}
